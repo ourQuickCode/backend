@@ -7,10 +7,6 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const userSchema = new Schema({
-  image: {
-    type: [String],
-    default: undefined
-  },
   fullname: {
     type: String,
     minLength: 3,
@@ -22,7 +18,8 @@ const userSchema = new Schema({
     minLength: 5,
     maxlength: 35,
     require: true,
-    match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+    match:
+      /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
   },
   password: {
     type: String,
@@ -30,9 +27,7 @@ const userSchema = new Schema({
     maxlength: 100,
     require: true
   },
-  favorite: [{ type: Schema.Types.ObjectId, ref: 'locals' }],
-  date: String,
-  resetToken: String,
+  date: String
 })
 
 const userModel = mongoose.model('users', userSchema)

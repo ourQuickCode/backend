@@ -15,6 +15,7 @@ const db = require('./storage/index')
 const morgan = require('morgan')
 const chalkl = require('chalk')
 const user = require('./components/user/user.routes')
+const post = require('./components/post/post.routes')
 
 //middlewares
 app.use(morgan('dev'))
@@ -28,12 +29,13 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 
 //validación que sí estemos en desarrollo
-if (config.env === 'development') {
+/* if (config.env === 'development') {
   console.log('[ Development config ]')
-}
+} */
 
 // [routes]
 app.use('/api/user', user)
+app.use('/api/post', post)
 
 // [static files]
 app.use('/app', express.static('public'))

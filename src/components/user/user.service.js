@@ -24,12 +24,12 @@ const userModel = require('../../storage/models/user')
 //1.1.1 ( CREATE ) USER
 //------------------------------------------------------------------------------------------------
 
-const add = async (user) => {
+const add = async user => {
   const myUser = new userModel(user)
   try {
     return await myUser.save()
   } catch (error) {
-    throw new Error (error)
+    throw new Error(error)
   }
 }
 
@@ -57,7 +57,7 @@ const updateImage = async (filter, update) => {
 //4.4.4 ( DELETE ) USER
 //------------------------------------------------------------------------------------------------
 
-const remove = async (filter) => {
+const remove = async filter => {
   const data = await userModel.findByIdAndRemove(filter)
   if (!data) {
     throw new Error('User not found')
@@ -76,15 +76,8 @@ const getAllUsersDb = () => {
 //6.6.X ( SHOW ) USER BY ID
 //------------------------------------------------------------------------------------------------
 
-const getOneUserByIdDb = async (id) => {
-  const data = await userModel
-  .findById(id)
-  .populate({
-    path: 'favorite',
-    populate: {path: 'favorite'}
-  })
-  .exec()
-
+const getOneUserByIdDb = async id => {
+  const data = await userModel.findById(id)
   if (data) {
     return data
   } else {
@@ -96,7 +89,7 @@ const getOneUserByIdDb = async (id) => {
 //7.7.7 ( FILTER ) USER MODEL
 //------------------------------------------------------------------------------------------------
 
-const getOneByFilter = async (filter) => {
+const getOneByFilter = async filter => {
   const data = await userModel.find(filter)
   return data
 }

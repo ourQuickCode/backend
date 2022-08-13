@@ -25,13 +25,13 @@ The states are numbers that indicate the status of the request:
 */
 
 exports.success = (req, res, message, status) => {
-    res.status(status || 200).send({
-      data: message
-    })
-  }
-  
-  exports.error = (req, res, error, status, details) => {
-    res.status(status || 500).send({
-      error: error
-    })
-  }
+  res.status(status || 200).send({
+    response: message
+  })
+}
+
+exports.error = (req, res, error, status, details) => {
+  res.status(status || 500).send({
+    response: error
+  })
+}
