@@ -16,6 +16,7 @@ In this file is where we put all the routes, here we put the endpoints and infor
     3 [DELETE] ( DELETE ) POST
     4 [GET] ( SHOW ) ALL POSTS
     5 [GET] ( SHOW ) POST BY ID
+    6 [GET] ( SEARCH ) POST
 
   - MODULE EXPORTS
 
@@ -102,6 +103,20 @@ router.get('/:id', async (req, res) => {
         message: 'Post not found'
       })
     }
+    response.success(req, res, result, 200)
+  } catch (error) {
+    response.error(req, res, error.message, 400, error)
+  }
+})
+
+//------------------------------------------------------------------------------------------------
+//6 ( SEARCH ) POST
+//------------------------------------------------------------------------------------------------
+
+router.get('/search/posts', async (req, res) => {
+  const { search } = req.body
+  try {
+    const result = await controller.search(search) 
     response.success(req, res, result, 200)
   } catch (error) {
     response.error(req, res, error.message, 400, error)
