@@ -12,6 +12,7 @@ in this file is all the logic, everything that is modify, change or check, is do
     3.3 [DELETE] ( DELETE ) POST
     4.4 [GET] ( SHOW ) ALL POSTS
     5.5 [GET] ( SHOW ) POST BY ID
+    6.6 [SEARCH] ( SEARCH ) POST
 
   - MODULE EXPORTS
 
@@ -132,6 +133,19 @@ const getPostById = async id => {
 }
 
 //------------------------------------------------------------------------------------------------
+//6.6 ( SEARCH ) POST
+//------------------------------------------------------------------------------------------------
+
+const search = async searchValue => {
+  const result = await storage.searchDb(searchValue)
+  finalResponse = {
+    data: result,
+    'System message': 'Search successful'
+  }
+  return finalResponse
+}
+
+//------------------------------------------------------------------------------------------------
 //MODULE EXPORTS
 //------------------------------------------------------------------------------------------------
 
@@ -140,5 +154,6 @@ module.exports = {
   updateLocal,
   deletePost,
   getAllPost,
-  getPostById
+  getPostById,
+  search
 }

@@ -9,6 +9,7 @@ It is in charge of managing the database, here it is specified, where and when t
     3.3.3 [DELETE] ( DELETE ) POST
     4.4.4 [GET] ( SHOW ) ALL POSTS
     5.5.5 [GET] ( SHOW ) POST BY ID
+    6.6.6 [SEARCH] ( SEARCH ) POST
 
   - MODULE EXPORTS
 
@@ -65,6 +66,15 @@ const getOnePostByIdDb = async id => {
 }
 
 //------------------------------------------------------------------------------------------------
+//6.6.6  ( SEARCH ) POST
+//------------------------------------------------------------------------------------------------
+
+const searchDb = async searchValue => {
+  const posts = await postModel.find({title: {$regex: `.*${searchValue}`, $options:"i"}})
+  return posts
+}
+
+//------------------------------------------------------------------------------------------------
 //MODULE EXPORTS
 //------------------------------------------------------------------------------------------------
 
@@ -73,5 +83,6 @@ module.exports = {
   update,
   remove,
   getAllPostsDb,
-  getOnePostByIdDb
+  getOnePostByIdDb,
+  searchDb
 }
