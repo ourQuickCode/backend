@@ -9,10 +9,9 @@ in this file is all the logic, everything that is modify, change or check, is do
 
     1.1 [POST] ( CREATE ) USER
     2.2 [PUT] ( UPDATE ) USER
-    3.3 [PUT] ( UPDATE ) USER IMAGE
-    4.4 [DELETE] ( DELETE ) USER
-    5.5 [GET] ( SHOW ) ALL USERS
-    6.6 [GET] ( SHOW ) USER BY ID
+    3.3 [DELETE] ( DELETE ) USER
+    4.4 [GET] ( SHOW ) ALL USERS
+    5.5 [GET] ( SHOW ) USER BY ID
 
   - MODULE EXPORTS
 
@@ -28,7 +27,6 @@ const bcrypt = require('bcrypt')
 //------------------------------------------------------------------------------------------------
 
 const createUser = async (fullname, email, password) => {
-
   if (!fullname || !email || !password) {
     throw new Error('Missing data')
   }
@@ -36,45 +34,49 @@ const createUser = async (fullname, email, password) => {
   const emailExists = await storage.getOneByFilter({ email })
 
   if (emailExists.length >= 1) {
-      throw new Error('Email used')
-    } else {
-      const hashedPassword = await new Promise((resolve, reject) => {
-        bcrypt.hash(password, 10, async (err, hashed) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(hashed)
-          }
-        })
+    throw new Error('Email used')
+  } else {
+    const hashedPassword = await new Promise((resolve, reject) => {
+      bcrypt.hash(password, 10, async (err, hashed) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(hashed)
+        }
       })
+    })
 
     const now = new Date()
 
-    day = now.getDate() 
+    day = now.getDate()
     month = now.getMonth() + 1
     year = now.getFullYear()
 
-    const date = year + "/" + month + "/" + day
+    const date = year + '/' + month + '/' + day
 
     const user = {
-      image: [],
       fullname,
       email,
       password: hashedPassword,
-      date,
-      resetToken: ""
+      date
     }
-    
-      return storage.add(user)
+
+    const newUser = await storage.add(user)
+
+    finalResponse = {
+      data: newUser,
+      'System message': 'User successfully created'
     }
+
+    return finalResponse
+  }
 }
 
 //------------------------------------------------------------------------------------------------
 //2.2 ( UPDATE ) USER
 //------------------------------------------------------------------------------------------------
 
-const updateUser = async (userUpdate) => {
-
+const updateUser = async (id, userUpdate) => {
   if (userUpdate) {
     if (userUpdate.password) {
       const hashedPassword = await new Promise((resolve, reject) => {
@@ -90,11 +92,16 @@ const updateUser = async (userUpdate) => {
       userUpdate.password = hashedPassword
     }
     const filter = {
-      _id: userUpdate._id
+      _id: id
     }
     const userUpdated = await storage.update(filter, userUpdate)
     if (userUpdated) {
-      return userUpdated
+      finalResponse = {
+        data: userUpdated,
+        'System message': 'User was successfully modified'
+      }
+
+      return finalResponse
     } else {
       throw new Error('User not found')
     }
@@ -104,60 +111,54 @@ const updateUser = async (userUpdate) => {
 }
 
 //------------------------------------------------------------------------------------------------
-//3.3 ( UPDATE ) USER IMAGE
+//3.3 ( DELETE ) USER
 //------------------------------------------------------------------------------------------------
 
-const editUserImage = async (id, image) => {
-  let imageUrl = ''
-    if(image) {
-      imageUrl = image.location
-    }
-
-    const imageData = {
-      image: imageUrl,
-    }
-
-    const filter = {
-      _id: id
-    }
-
-    return storage.updateImage(filter, imageData)
-}
-
-//------------------------------------------------------------------------------------------------
-//4.4 ( DELETE ) USER
-//------------------------------------------------------------------------------------------------
-
-const deleteUser = async(id) => {
-
+const deleteUser = async id => {
   if (id) {
     const filter = {
       _id: id
     }
-    return await storage.remove(filter)
+
+    await storage.remove(filter)
+
+    finalResponse = {
+      'System message': 'User successfully deleted'
+    }
+
+    return finalResponse
   } else {
     throw new Error('Id needed')
   }
 }
 
 //------------------------------------------------------------------------------------------------
-//5.5 ( SHOW ) ALL USERS
+//4.4 ( SHOW ) ALL USERS
 //------------------------------------------------------------------------------------------------
 
-const getAllUsers = () => {
-  return storage.getAllUsersDb()
+const getAllUsers = async () => {
+  const users = await storage.getAllUsersDb()
+  finalResponse = {
+    data: users,
+    'System message': 'Correct users search'
+  }
+  return finalResponse
 }
 
 //------------------------------------------------------------------------------------------------
-//6.6 ( SHOW ) USER BY ID
+//5.5 ( SHOW ) USER BY ID
 //------------------------------------------------------------------------------------------------
 
-const getOneUserById = async (id) => {
+const getOneUserById = async id => {
   if (!id) {
     throw new Error('id needed')
   } else {
-    const data = await storage.getOneUserByIdDb(id)
-    return data
+    const user = await storage.getOneUserByIdDb(id)
+    finalResponse = {
+      data: user,
+      'System message': 'Correct user search'
+    }
+    return finalResponse
   }
 }
 
@@ -168,8 +169,7 @@ const getOneUserById = async (id) => {
 module.exports = {
   createUser,
   updateUser,
-  editUserImage,
   deleteUser,
   getAllUsers,
-  getOneUserById,
+  getOneUserById
 }

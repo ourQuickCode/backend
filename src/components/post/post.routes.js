@@ -5,109 +5,121 @@ In this file is where we put all the routes, here we put the endpoints and infor
   - GET - Collect information from the server.
   - POST - Add information to the server.
   - PUT - Replace information on the server.
+  - PATCH - Update part of the information.
   - DELETE - Delete information from the server.
+  - OPTIONS - Ask for information about methods (know if we can execute any of the previous methods).
 
   - CODE INDEX
 
-    1 [POST] ( CREATE ) USER
-    2 [PUT] ( UPDATE ) USER
-    3 [DELETE] ( DELETE ) USER
-    4 [GET] ( SHOW ) ALL USERS
-    5 [GET] ( SHOW ) USER BY ID
+    1 [POST] ( CREATE ) POST
+    2 [PUT] ( UPDATE ) POST
+    3 [DELETE] ( DELETE ) POST
+    4 [GET] ( SHOW ) ALL POSTS
+    5 [GET] ( SHOW ) POST BY ID
+    6 [GET] ( SEARCH ) POST
 
   - MODULE EXPORTS
 
 */
 
 const express = require('express')
-const response = require('../../network/response')
-const controller = require('./user.controller')
+const response = require('./../../network/response')
+const controller = require('./post.controller')
 const router = express.Router()
 
 //------------------------------------------------------------------------------------------------
-//CODE INDEX
-//------------------------------------------------------------------------------------------------
-//1 ( CREATE ) USER
+//1 ( CREATE ) POST
 //------------------------------------------------------------------------------------------------
 
-router.post('/register', async (req, res) => {
-  const { fullname, email, password } = req.body
+router.post('/', async (req, res) => {
+  const { title, text } = req.body
   try {
-    const user = await controller.createUser(fullname, email, password)
-    response.success(req, res, user, 201)
+    const post = await controller.createPost(title, text)
+    response.success(req, res, post, 201)
   } catch (error) {
     response.error(req, res, error.message, 400, error)
   }
 })
 
 //------------------------------------------------------------------------------------------------
-//2 ( UPDATE ) USER
+//2 ( UPDATE ) POST
 //------------------------------------------------------------------------------------------------
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params
-  const { body: user } = req
+  const { body: post } = req
+
   try {
-    const data = await controller.updateUser(id, user)
-    response.success(req, res, data, 200)
+    const local = await controller.updateLocal(id, post)
+    response.success(req, res, local, 201)
   } catch (error) {
     response.error(req, res, error.message, 400, error)
   }
 })
 
 //------------------------------------------------------------------------------------------------
-//3 ( UPDATE ) USER IMAGE
-//------------------------------------------------------------------------------------------------
-
-router.post('/editimage/:id', async (req, res) => {
-  const { id } = req.params
-  try {
-    const userImage = await controller.editUserImage(id, req.file)
-    response.success(req, res, userImage, 201)
-  } catch (error) {
-    response.error(req, res, error.message, 400, error)
-  }
-})
-
-//------------------------------------------------------------------------------------------------
-//4 ( DELETE ) USER
+//3 ( DELETE ) POST
 //------------------------------------------------------------------------------------------------
 
 router.delete('/:id', async (req, res) => {
   const { id } = req.params
+
   try {
-    const user = await controller.deleteUser(id)
-    response.success(res, res, user, 200)
+    const post = await controller.deletePost(id)
+    response.success(res, res, post, 200)
   } catch (error) {
     response.error(req, res, error.message, 400, error)
   }
 })
 
 //------------------------------------------------------------------------------------------------
-//5 ( SHOW ) ALL USERS
+//4 ( SHOW ) ALL POSTS
 //------------------------------------------------------------------------------------------------
 
 router.get('/', async (req, res) => {
   try {
-    const data = await controller.getAllUsers()
-    response.success(req, res, data, 200)
+    const result = await controller.getAllPost()
+    if (result === false) {
+      response.status(400).json({
+        message: 'Post not found'
+      })
+    }
+    response.success(req, res, result, 200)
   } catch (error) {
-    response.error(req, res, 'Something wrong happend', 500, error)
+    response.error(req, res, error.message, 400, error)
   }
 })
 
 //------------------------------------------------------------------------------------------------
-//6 ( SHOW ) USER BY ID
+//5 ( SHOW ) POST BY ID
 //------------------------------------------------------------------------------------------------
 
 router.get('/:id', async (req, res) => {
   const { id } = req.params
-
   try {
-    const data = await controller.getOneUserById(id)
-    response.success(req, res, data, 200)
+    const result = await controller.getPostById(id)
+    if (result === false) {
+      response.status(400).json({
+        message: 'Post not found'
+      })
+    }
+    response.success(req, res, result, 200)
   } catch (error) {
-    response.error(req, res, error.message, 400)
+    response.error(req, res, error.message, 400, error)
+  }
+})
+
+//------------------------------------------------------------------------------------------------
+//6 ( SEARCH ) POST
+//------------------------------------------------------------------------------------------------
+
+router.get('/search/posts', async (req, res) => {
+  const { search } = req.body
+  try {
+    const result = await controller.search(search) 
+    response.success(req, res, result, 200)
+  } catch (error) {
+    response.error(req, res, error.message, 400, error)
   }
 })
 

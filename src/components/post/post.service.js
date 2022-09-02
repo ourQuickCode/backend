@@ -4,94 +4,74 @@ It is in charge of managing the database, here it is specified, where and when t
 
   - CODE INDEX
 
-    1.1.1 [POST] ( CREATE ) USER
-    2.2.2 [PUT] ( UPDATE ) USER
-    3.3.3 [PUT] ( UPDATE ) USER IMAGE
-    4.4.4 [DELETE] ( DELETE ) USER
-    5.5.5 [GET] ( SHOW ) ALL USERS
-    6.6.X [GET] ( SHOW ) USER BY ID
-    7.7.7 ( FILTER ) USER MODEL
+    1.1.1 [POST] ( CREATE ) LOCPOSTAL
+    2.2.2 [PUT] ( UPDATE ) POST
+    3.3.3 [DELETE] ( DELETE ) POST
+    4.4.4 [GET] ( SHOW ) ALL POSTS
+    5.5.5 [GET] ( SHOW ) POST BY ID
+    6.6.6 [SEARCH] ( SEARCH ) POST
 
   - MODULE EXPORTS
 
 */
 
-const userModel = require('../../storage/models/user')
+const postModel = require('./../../storage/models/post')
 
 //------------------------------------------------------------------------------------------------
-//CODE INDEX
-//------------------------------------------------------------------------------------------------
-//1.1.1 ( CREATE ) USER
+//1.1.1 ( CREATE ) POST
 //------------------------------------------------------------------------------------------------
 
-const add = async user => {
-  const myUser = new userModel(user)
-  try {
-    return await myUser.save()
-  } catch (error) {
-    throw new Error(error)
-  }
+const add = async post => {
+  const newPost = new postModel(post)
+  return newPost.save()
 }
 
 //------------------------------------------------------------------------------------------------
-//2.2.2 ( UPDATE ) USER
+//2.2.2 ( UPDATE ) POST
 //------------------------------------------------------------------------------------------------
 
-const update = async (filter, update) => {
-  return await userModel.findOneAndUpdate(filter, update, {
+const update = async (filter, post) => {
+  return await postModel.findOneAndUpdate(filter, post, {
     returnOriginal: false
   })
 }
 
 //------------------------------------------------------------------------------------------------
-//3.3.3 ( UPDATE ) USER IMAGE
-//------------------------------------------------------------------------------------------------
-
-const updateImage = async (filter, update) => {
-  return await userModel.findOneAndUpdate(filter, update, {
-    returnOriginal: false
-  })
-}
-
-//------------------------------------------------------------------------------------------------
-//4.4.4 ( DELETE ) USER
+//3.3.3 ( DELETE ) POST
 //------------------------------------------------------------------------------------------------
 
 const remove = async filter => {
-  const data = await userModel.findByIdAndRemove(filter)
+  const data = await postModel.findByIdAndRemove(filter)
   if (!data) {
-    throw new Error('User not found')
+    throw new Error('Post not found')
   }
 }
 
 //------------------------------------------------------------------------------------------------
-//5.5.5 ( SHOW ) ALL USERS
+//4.4.4 ( SHOW ) ALL POSTS
 //------------------------------------------------------------------------------------------------
 
-const getAllUsersDb = () => {
-  return userModel.find({})
+const getAllPostsDb = async () => {
+  const locals = await postModel.find().exec()
+  return locals
 }
 
 //------------------------------------------------------------------------------------------------
-//6.6.X ( SHOW ) USER BY ID
+//5.5.5 ( SHOW ) POST BY ID
 //------------------------------------------------------------------------------------------------
 
-const getOneUserByIdDb = async id => {
-  const data = await userModel.findById(id)
-  if (data) {
-    return data
-  } else {
-    throw new Error('User not found')
-  }
+const getOnePostByIdDb = async id => {
+  const posts = await postModel.findOne({ _id: id })
+  return posts
 }
 
 //------------------------------------------------------------------------------------------------
-//7.7.7 ( FILTER ) USER MODEL
+//6.6.6  ( SEARCH ) POST
 //------------------------------------------------------------------------------------------------
 
-const getOneByFilter = async filter => {
-  const data = await userModel.find(filter)
-  return data
+const searchDb = async searchValue => {
+  const posts = await postModel.find({title: {$regex: `.*${searchValue}`, $options:"i"}})
+  return posts
 }
 
 //------------------------------------------------------------------------------------------------
@@ -101,9 +81,8 @@ const getOneByFilter = async filter => {
 module.exports = {
   add,
   update,
-  updateImage,
   remove,
-  getAllUsersDb,
-  getOneUserByIdDb,
-  getOneByFilter
+  getAllPostsDb,
+  getOnePostByIdDb,
+  searchDb
 }
