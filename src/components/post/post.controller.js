@@ -74,7 +74,7 @@ const updateLocal = async (id, post) => {
     const result = await storage.update(filter, post)
 
     const finalResponse = {
-      data,
+      data: result,
       'System Message': 'Post succesfully updated'
     }
     return finalResponse

@@ -16,6 +16,7 @@ const morgan = require('morgan')
 const chalkl = require('chalk')
 const user = require('./components/user/user.routes')
 const post = require('./components/post/post.routes')
+const contact = require('./components/contact/contact.routes')
 
 //middlewares
 app.use(morgan('dev'))
@@ -36,6 +37,7 @@ app.use(cors())
 // [routes]
 app.use('/api/user', user)
 app.use('/api/post', post)
+app.use('/api/contact', contact)
 
 // [static files]
 app.use('/app', express.static('public'))
