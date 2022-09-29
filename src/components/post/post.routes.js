@@ -114,9 +114,9 @@ router.get('/:id', async (req, res) => {
 //------------------------------------------------------------------------------------------------
 
 router.get('/search/posts', async (req, res) => {
-  const { search } = req.body
+  const { search } = req.query
   try {
-    const result = await controller.search(search) 
+    const result = await controller.search(search)
     response.success(req, res, result, 200)
   } catch (error) {
     response.error(req, res, error.message, 400, error)
