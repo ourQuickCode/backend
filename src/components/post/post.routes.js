@@ -9,72 +9,119 @@ In this file is where we put all the routes, here we put the endpoints and infor
   - DELETE - Delete information from the server.
   - OPTIONS - Ask for information about methods (know if we can execute any of the previous methods).
 
-  - CODE INDEX
+  - ROUTES INDEX
 
-    1 [POST] ( CREATE ) POST
-    2 [PUT] ( UPDATE ) POST
-    3 [DELETE] ( DELETE ) POST
-    4 [GET] ( SHOW ) ALL POSTS
-    5 [GET] ( SHOW ) POST BY ID
-    6 [GET] ( SEARCH ) POST
+    1. CREATE POST
+    2. UPDATE POST
+    3. DELETE POST
+    4. SHOW ALL POSTS
+    5. SHOW POST BY ID
+    6. SEARCH POST
 
   - MODULE EXPORTS
 
 */
 
 const express = require('express')
+const router = express.Router()
+const passport = require('passport')
 const response = require('./../../network/response')
 const controller = require('./post.controller')
-const router = express.Router()
+const { checkRoles } = require('./../../middlewares/aut.handler')
 
-//------------------------------------------------------------------------------------------------
-//1 ( CREATE ) POST
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 1. CREATE POST
+ * @desc      post creation
+ * @access    Private
+ * @roles     administrator
+ * @route     POST api/post
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
-router.post('/', async (req, res) => {
-  const { title, text } = req.body
-  try {
-    const post = await controller.createPost(title, text)
-    response.success(req, res, post, 201)
-  } catch (error) {
-    response.error(req, res, error.message, 400, error)
+router.post(
+  '/',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('administrator'),
+  async (req, res, next) => {
+    const { title, text } = req.body
+    try {
+      const post = await controller.createPost(title, text)
+      response.success(req, res, post, 201)
+    } catch (error) {
+      response.error(req, res, error, 400, error)
+    }
   }
-})
+)
 
-//------------------------------------------------------------------------------------------------
-//2 ( UPDATE ) POST
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 2. UPDATE POST
+ * @desc      update post by id
+ * @access    Private
+ * @roles     administrator
+ * @route     PUT api/post/:id
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
-router.put('/:id', async (req, res) => {
-  const { id } = req.params
-  const { body: post } = req
-
-  try {
-    const local = await controller.updateLocal(id, post)
-    response.success(req, res, local, 201)
-  } catch (error) {
-    response.error(req, res, error.message, 400, error)
+router.put(
+  '/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('administrator'),
+  async (req, res, next) => {
+    const { id } = req.params
+    const { body: post } = req
+    try {
+      const local = await controller.updateLocal(id, post)
+      response.success(req, res, local, 201)
+    } catch (error) {
+      response.error(req, res, error, 400, error)
+    }
   }
-})
+)
 
-//------------------------------------------------------------------------------------------------
-//3 ( DELETE ) POST
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 3. DELETE POST
+ * @desc      delete post by id
+ * @access    Private
+ * @roles     administrator
+ * @route     DELETE api/post/:id
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params
+router.delete(
+  '/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('administrator'),
+  async (req, res) => {
+    const { id } = req.params
 
-  try {
-    const post = await controller.deletePost(id)
-    response.success(res, res, post, 200)
-  } catch (error) {
-    response.error(req, res, error.message, 400, error)
+    try {
+      const post = await controller.deletePost(id)
+      response.success(res, res, post, 200)
+    } catch (error) {
+      response.error(req, res, error, 400, error)
+    }
   }
-})
+)
 
-//------------------------------------------------------------------------------------------------
-//4 ( SHOW ) ALL POSTS
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 4. SHOW ALL POSTS
+ * @desc      get all posts
+ * @access    Public
+ * @route     GET api/post
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 router.get('/', async (req, res) => {
   try {
@@ -86,13 +133,20 @@ router.get('/', async (req, res) => {
     }
     response.success(req, res, result, 200)
   } catch (error) {
-    response.error(req, res, error.message, 400, error)
+    response.error(req, res, error, 400, error)
   }
 })
 
-//------------------------------------------------------------------------------------------------
-//5 ( SHOW ) POST BY ID
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 5. SHOW POST BY ID
+ * @desc      get post by id
+ * @access    Public
+ * @route     GET api/post/:id
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 router.get('/:id', async (req, res) => {
   const { id } = req.params
@@ -105,26 +159,35 @@ router.get('/:id', async (req, res) => {
     }
     response.success(req, res, result, 200)
   } catch (error) {
-    response.error(req, res, error.message, 400, error)
+    response.error(req, res, error, 400, error)
   }
 })
 
-//------------------------------------------------------------------------------------------------
-//6 ( SEARCH ) POST
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 6. SEARCH POST
+ * @desc      post search
+ * @access    Public
+ * @route     GET api/post/search/post
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 router.get('/search/posts', async (req, res) => {
-  const { search } = req.body
+  const { search } = req.query
   try {
-    const result = await controller.search(search) 
+    const result = await controller.search(search)
     response.success(req, res, result, 200)
   } catch (error) {
-    response.error(req, res, error.message, 400, error)
+    response.error(req, res, error, 400, error)
   }
 })
 
-//------------------------------------------------------------------------------------------------
-//MODULE EXPORTS
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * MODULE EXPORTS
+ * ------------------------------------------
+ */
 
 module.exports = router

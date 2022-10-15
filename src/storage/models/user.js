@@ -7,6 +7,15 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const userSchema = new Schema({
+  /* role list
+  1.- administrador
+  2.- user */
+  role: {
+    type: String,
+    minLength: 4,
+    maxlength: 13,
+    require: true
+  },
   fullname: {
     type: String,
     minLength: 3,
@@ -27,7 +36,8 @@ const userSchema = new Schema({
     maxlength: 100,
     require: true
   },
-  date: String
+  date: String,
+  resetToken: String
 })
 
 const userModel = mongoose.model('users', userSchema)

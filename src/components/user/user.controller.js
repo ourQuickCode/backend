@@ -5,13 +5,13 @@ A controller is a function that you write to control data.
 With a self-written controller, you can modify the data the way you want,
 in this file is all the logic, everything that is modify, change or check, is done in that file.
 
-  - CODE INDEX
+  - CONTROLLER INDEX
 
-    1.1 [POST] ( CREATE ) USER
-    2.2 [PUT] ( UPDATE ) USER
-    3.3 [DELETE] ( DELETE ) USER
-    4.4 [GET] ( SHOW ) ALL USERS
-    5.5 [GET] ( SHOW ) USER BY ID
+    1. CREATE USER
+    2. UPDATE USER
+    3. DELETE USER
+    4. SHOW ALL USERS
+    5. SHOW USER BY ID
 
   - MODULE EXPORTS
 
@@ -20,14 +20,17 @@ in this file is all the logic, everything that is modify, change or check, is do
 const storage = require('./user.service')
 const bcrypt = require('bcrypt')
 
-//------------------------------------------------------------------------------------------------
-//CODE INDEX
-//------------------------------------------------------------------------------------------------
-//1.1 ( CREATE ) USER
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 1. CREATE USER
+ * @desc      user creation
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
-const createUser = async (fullname, email, password) => {
-  if (!fullname || !email || !password) {
+const createUser = async (fullname, email, password, role) => {
+  if (!fullname || !email || !password || !role) {
     throw new Error('Missing data')
   }
 
@@ -55,6 +58,7 @@ const createUser = async (fullname, email, password) => {
     const date = year + '/' + month + '/' + day
 
     const user = {
+      role,
       fullname,
       email,
       password: hashedPassword,
@@ -72,9 +76,14 @@ const createUser = async (fullname, email, password) => {
   }
 }
 
-//------------------------------------------------------------------------------------------------
-//2.2 ( UPDATE ) USER
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 2. UPDATE USER
+ * @desc      update user by id
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 const updateUser = async (id, userUpdate) => {
   if (userUpdate) {
@@ -110,9 +119,14 @@ const updateUser = async (id, userUpdate) => {
   }
 }
 
-//------------------------------------------------------------------------------------------------
-//3.3 ( DELETE ) USER
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 3. DELETE USER
+ * @desc      delete user by id
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 const deleteUser = async id => {
   if (id) {
@@ -132,9 +146,14 @@ const deleteUser = async id => {
   }
 }
 
-//------------------------------------------------------------------------------------------------
-//4.4 ( SHOW ) ALL USERS
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 4. SHOW ALL USERS
+ * @desc      get all users
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 const getAllUsers = async () => {
   const users = await storage.getAllUsersDb()
@@ -145,9 +164,14 @@ const getAllUsers = async () => {
   return finalResponse
 }
 
-//------------------------------------------------------------------------------------------------
-//5.5 ( SHOW ) USER BY ID
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 5. SHOW USER BY ID
+ * @desc      get user by id
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 const getOneUserById = async id => {
   if (!id) {
@@ -162,9 +186,11 @@ const getOneUserById = async id => {
   }
 }
 
-//------------------------------------------------------------------------------------------------
-//MODULE EXPORTS
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * MODULE EXPORTS
+ * ------------------------------------------
+ */
 
 module.exports = {
   createUser,

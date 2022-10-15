@@ -17,6 +17,12 @@ const chalkl = require('chalk')
 const user = require('./components/user/user.routes')
 const post = require('./components/post/post.routes')
 const contact = require('./components/contact/contact.routes')
+const authentication = require('./components/authentication/authentication.routes')
+const {
+  logErrors,
+  errorHandler,
+  boomErrorHandler
+} = require('./middlewares/error.handler')
 
 //middlewares
 app.use(morgan('dev'))
@@ -28,22 +34,23 @@ db('')
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors())
-
-//validación que sí estemos en desarrollo
-/* if (config.env === 'development') {
-  console.log('[ Development config ]')
-} */
+require('./utils/auth')
 
 // [routes]
+app.use('/api/authentication', authentication)
 app.use('/api/user', user)
 app.use('/api/post', post)
 app.use('/api/contact', contact)
+
+//error middlewares
+app.use(logErrors)
+app.use(boomErrorHandler)
+app.use(errorHandler)
 
 // [static files]
 app.use('/app', express.static('public'))
 
 // [starting server]
-
 app.listen(config.port, err => {
   if (err) console.error()
   else

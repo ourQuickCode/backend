@@ -7,98 +7,139 @@ In this file is where we put all the routes, here we put the endpoints and infor
   - PUT - Replace information on the server.
   - DELETE - Delete information from the server.
 
-  - CODE INDEX
+  - ROUTES INDEX
 
-    1 [POST] ( CREATE ) USER
-    2 [PUT] ( UPDATE ) USER
-    3 [DELETE] ( DELETE ) USER
-    4 [GET] ( SHOW ) ALL USERS
-    5 [GET] ( SHOW ) USER BY ID
+    1. CREATE USER
+    2. UPDATE USER
+    3. DELETE USER
+    4. SHOW ALL USERS
+    5. SHOW USER BY ID
 
   - MODULE EXPORTS
 
 */
 
 const express = require('express')
+const router = express.Router()
+const passport = require('passport')
 const response = require('../../network/response')
 const controller = require('./user.controller')
-const router = express.Router()
+const { checkRoles } = require('./../../middlewares/aut.handler')
 
-//------------------------------------------------------------------------------------------------
-//CODE INDEX
-//------------------------------------------------------------------------------------------------
-//1 ( CREATE ) USER
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 1. CREATE USER
+ * @desc      user creation
+ * @access    Private
+ * @roles     administrator
+ * @route     POST api/user
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 router.post('/register', async (req, res) => {
-  const { fullname, email, password } = req.body
+  const { fullname, email, password, role } = req.body
   try {
-    const user = await controller.createUser(fullname, email, password)
+    const user = await controller.createUser(fullname, email, password, role)
     response.success(req, res, user, 201)
   } catch (error) {
-    response.error(req, res, error.message, 400, error)
+    response.error(req, res, error, 400, error)
   }
 })
 
-//------------------------------------------------------------------------------------------------
-//2 ( UPDATE ) USER
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 2. UPDATE USER
+ * @desc      update user by id
+ * @access    Private
+ * @roles     administrator
+ * @route     PUT api/user
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
-router.put('/:id', async (req, res) => {
-  const { id } = req.params
-  const { body: user } = req
-  try {
-    const data = await controller.updateUser(id, user)
-    response.success(req, res, data, 200)
-  } catch (error) {
-    response.error(req, res, error.message, 400, error)
+router.put(
+  '/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('administrator'),
+  async (req, res) => {
+    const { id } = req.params
+    const { body: user } = req
+    try {
+      const data = await controller.updateUser(id, user)
+      response.success(req, res, data, 200)
+    } catch (error) {
+      response.error(req, res, error, 400, error)
+    }
   }
-})
+)
 
-//------------------------------------------------------------------------------------------------
-//3 ( UPDATE ) USER IMAGE
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 3. DELETE USER
+ * @desc      delete user by id
+ * @access    Private
+ * @roles     administrator
+ * @route     DELETE api/user
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
-router.post('/editimage/:id', async (req, res) => {
-  const { id } = req.params
-  try {
-    const userImage = await controller.editUserImage(id, req.file)
-    response.success(req, res, userImage, 201)
-  } catch (error) {
-    response.error(req, res, error.message, 400, error)
+router.delete(
+  '/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('administrator'),
+  async (req, res) => {
+    const { id } = req.params
+    try {
+      const user = await controller.deleteUser(id)
+      response.success(res, res, user, 200)
+    } catch (error) {
+      response.error(req, res, error, 400, error)
+    }
   }
-})
+)
 
-//------------------------------------------------------------------------------------------------
-//4 ( DELETE ) USER
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 4. SHOW ALL USERS
+ * @desc      get all users
+ * @access    Private
+ * @roles     administrator
+ * @route     GET api/user
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params
-  try {
-    const user = await controller.deleteUser(id)
-    response.success(res, res, user, 200)
-  } catch (error) {
-    response.error(req, res, error.message, 400, error)
+router.get(
+  '/',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('administrator'),
+  async (req, res) => {
+    try {
+      const data = await controller.getAllUsers()
+      response.success(req, res, data, 200)
+    } catch (error) {
+      response.error(req, res, 'Something wrong happend', 500, error)
+    }
   }
-})
+)
 
-//------------------------------------------------------------------------------------------------
-//5 ( SHOW ) ALL USERS
-//------------------------------------------------------------------------------------------------
-
-router.get('/', async (req, res) => {
-  try {
-    const data = await controller.getAllUsers()
-    response.success(req, res, data, 200)
-  } catch (error) {
-    response.error(req, res, 'Something wrong happend', 500, error)
-  }
-})
-
-//------------------------------------------------------------------------------------------------
-//6 ( SHOW ) USER BY ID
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 5. SHOW USER BY ID
+ * @desc      get user by id
+ * @access    Private
+ * @roles     administrator
+ * @route     GET api/user
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 router.get('/:id', async (req, res) => {
   const { id } = req.params
@@ -111,8 +152,10 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-//------------------------------------------------------------------------------------------------
-//MODULE EXPORTS
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * MODULE EXPORTS
+ * ------------------------------------------
+ */
 
 module.exports = router

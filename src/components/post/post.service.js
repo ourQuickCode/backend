@@ -2,14 +2,14 @@
 
 It is in charge of managing the database, here it is specified, where and when the information is saved
 
-  - CODE INDEX
+  - SERVICES INDEX
 
-    1.1.1 [POST] ( CREATE ) LOCPOSTAL
-    2.2.2 [PUT] ( UPDATE ) POST
-    3.3.3 [DELETE] ( DELETE ) POST
-    4.4.4 [GET] ( SHOW ) ALL POSTS
-    5.5.5 [GET] ( SHOW ) POST BY ID
-    6.6.6 [SEARCH] ( SEARCH ) POST
+    1. add
+    2. update
+    3. remove
+    4. getAllPostsDb
+    5. getOnePostByIdDb
+    6. searchDb
 
   - MODULE EXPORTS
 
@@ -17,18 +17,26 @@ It is in charge of managing the database, here it is specified, where and when t
 
 const postModel = require('./../../storage/models/post')
 
-//------------------------------------------------------------------------------------------------
-//1.1.1 ( CREATE ) POST
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 1. add
+ * @desc      post creation
+ * @params    {object} post
+ * ------------------------------------------
+ */
 
 const add = async post => {
   const newPost = new postModel(post)
   return newPost.save()
 }
 
-//------------------------------------------------------------------------------------------------
-//2.2.2 ( UPDATE ) POST
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 2. update
+ * @desc      update post by id
+ * @params    {object} filter, {object} post,
+ * ------------------------------------------
+ */
 
 const update = async (filter, post) => {
   return await postModel.findOneAndUpdate(filter, post, {
@@ -36,9 +44,13 @@ const update = async (filter, post) => {
   })
 }
 
-//------------------------------------------------------------------------------------------------
-//3.3.3 ( DELETE ) POST
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 3. remove
+ * @desc      delete post by id
+ * @params    {object} filter
+ * ------------------------------------------
+ */
 
 const remove = async filter => {
   const data = await postModel.findByIdAndRemove(filter)
@@ -47,36 +59,52 @@ const remove = async filter => {
   }
 }
 
-//------------------------------------------------------------------------------------------------
-//4.4.4 ( SHOW ) ALL POSTS
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 4. getAllPostsDb
+ * @desc      get all posts
+ * @params    null
+ * ------------------------------------------
+ */
 
 const getAllPostsDb = async () => {
   const locals = await postModel.find().exec()
   return locals
 }
 
-//------------------------------------------------------------------------------------------------
-//5.5.5 ( SHOW ) POST BY ID
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 5. getOnePostByIdDb
+ * @desc      get post by id
+ * @params    id
+ * ------------------------------------------
+ */
 
 const getOnePostByIdDb = async id => {
   const posts = await postModel.findOne({ _id: id })
   return posts
 }
 
-//------------------------------------------------------------------------------------------------
-//6.6.6  ( SEARCH ) POST
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 6. searchDb
+ * @desc      post search
+ * @params    searchValue
+ * ------------------------------------------
+ */
 
 const searchDb = async searchValue => {
-  const posts = await postModel.find({title: {$regex: `.*${searchValue}`, $options:"i"}})
+  const posts = await postModel.find({
+    title: { $regex: `.*${searchValue}`, $options: 'i' }
+  })
   return posts
 }
 
-//------------------------------------------------------------------------------------------------
-//MODULE EXPORTS
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * MODULE EXPORTS
+ * ------------------------------------------
+ */
 
 module.exports = {
   add,

@@ -5,9 +5,9 @@ A controller is a function that you write to control data.
 With a self-written controller, you can modify the data the way you want,
 in this file is all the logic, everything that is modify, change or check, is done in that file.
 
-  - CODE INDEX
+  - CONTROLLER INDEX
 
-    1.1 [PUT] ( SEND ) EMAIL
+    1. SEND EMAIL
 
   - MODULE EXPORTS
 
@@ -15,9 +15,14 @@ in this file is all the logic, everything that is modify, change or check, is do
 
 const nodemailer = require('nodemailer')
 
-//------------------------------------------------------------------------------------------------
-//1.1 ( SEND ) EMAIL
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 1. SEND EMAIL
+ * @desc      sending contact email
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 const sendEmail = async (name, number, email, message) => {
   try {
@@ -67,9 +72,11 @@ const sendEmail = async (name, number, email, message) => {
   }
 }
 
-//------------------------------------------------------------------------------------------------
-//MODULE EXPORTS
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * MODULE EXPORTS
+ * ------------------------------------------
+ */
 
 module.exports = {
   sendEmail

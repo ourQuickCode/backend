@@ -30,8 +30,12 @@ exports.success = (req, res, message, status) => {
   })
 }
 
-exports.error = (req, res, error, status, details) => {
+exports.error = (req, res, error, status) => {
   res.status(status || 500).send({
-    response: error
+    response: {
+      status: 'Error',
+      message: error.message,
+      stack: error.stack
+    }
   })
 }

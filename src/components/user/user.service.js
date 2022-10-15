@@ -2,15 +2,15 @@
 
 It is in charge of managing the database, here it is specified, where and when the information is saved
 
-  - CODE INDEX
+  - SERVICES INDEX
 
-    1.1.1 [POST] ( CREATE ) USER
-    2.2.2 [PUT] ( UPDATE ) USER
-    3.3.3 [PUT] ( UPDATE ) USER IMAGE
-    4.4.4 [DELETE] ( DELETE ) USER
-    5.5.5 [GET] ( SHOW ) ALL USERS
-    6.6.X [GET] ( SHOW ) USER BY ID
-    7.7.7 ( FILTER ) USER MODEL
+    1. add
+    2. update
+    3. remove
+    4. getAllUsersDb
+    5. getOneUserByIdDb
+    6. getOneByFilter
+    7. getOneByFilterUser
 
   - MODULE EXPORTS
 
@@ -18,11 +18,13 @@ It is in charge of managing the database, here it is specified, where and when t
 
 const userModel = require('../../storage/models/user')
 
-//------------------------------------------------------------------------------------------------
-//CODE INDEX
-//------------------------------------------------------------------------------------------------
-//1.1.1 ( CREATE ) USER
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 1. add
+ * @desc      user creation
+ * @params    {object} user
+ * ------------------------------------------
+ */
 
 const add = async user => {
   const myUser = new userModel(user)
@@ -33,9 +35,13 @@ const add = async user => {
   }
 }
 
-//------------------------------------------------------------------------------------------------
-//2.2.2 ( UPDATE ) USER
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 2. update
+ * @desc      update user by id
+ * @params    {object} filter, {object} user,
+ * ------------------------------------------
+ */
 
 const update = async (filter, update) => {
   return await userModel.findOneAndUpdate(filter, update, {
@@ -43,19 +49,13 @@ const update = async (filter, update) => {
   })
 }
 
-//------------------------------------------------------------------------------------------------
-//3.3.3 ( UPDATE ) USER IMAGE
-//------------------------------------------------------------------------------------------------
-
-const updateImage = async (filter, update) => {
-  return await userModel.findOneAndUpdate(filter, update, {
-    returnOriginal: false
-  })
-}
-
-//------------------------------------------------------------------------------------------------
-//4.4.4 ( DELETE ) USER
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 3. remove
+ * @desc      delete user by id
+ * @params    {object} filter
+ * ------------------------------------------
+ */
 
 const remove = async filter => {
   const data = await userModel.findByIdAndRemove(filter)
@@ -64,17 +64,25 @@ const remove = async filter => {
   }
 }
 
-//------------------------------------------------------------------------------------------------
-//5.5.5 ( SHOW ) ALL USERS
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 4. getAllUsersDb
+ * @desc      get all users
+ * @params    null
+ * ------------------------------------------
+ */
 
 const getAllUsersDb = () => {
   return userModel.find({})
 }
 
-//------------------------------------------------------------------------------------------------
-//6.6.X ( SHOW ) USER BY ID
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 5. getOneUserByIdDb
+ * @desc      get user by id
+ * @params    id
+ * ------------------------------------------
+ */
 
 const getOneUserByIdDb = async id => {
   const data = await userModel.findById(id)
@@ -85,25 +93,44 @@ const getOneUserByIdDb = async id => {
   }
 }
 
-//------------------------------------------------------------------------------------------------
-//7.7.7 ( FILTER ) USER MODEL
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 6. getOneByFilter
+ * @desc      get user by id
+ * @params    {object} filter
+ * ------------------------------------------
+ */
 
 const getOneByFilter = async filter => {
   const data = await userModel.find(filter)
   return data
 }
 
-//------------------------------------------------------------------------------------------------
-//MODULE EXPORTS
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 7. getOneByFilterUser
+ * @desc      get user by id
+ * @params    {object} filter
+ * ------------------------------------------
+ */
+
+const getOneByFilterUser = async filter => {
+  const data = await userModel.find(filter)
+  return data
+}
+
+/**
+ * ------------------------------------------
+ * MODULE EXPORTS
+ * ------------------------------------------
+ */
 
 module.exports = {
   add,
   update,
-  updateImage,
   remove,
   getAllUsersDb,
   getOneUserByIdDb,
-  getOneByFilter
+  getOneByFilter,
+  getOneByFilterUser
 }

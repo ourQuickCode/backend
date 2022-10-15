@@ -5,14 +5,14 @@ A controller is a function that you write to control data.
 With a self-written controller, you can modify the data the way you want,
 in this file is all the logic, everything that is modify, change or check, is done in that file.
 
-  - CODE INDEX
+  - CONTROLLER INDEX
 
-    1.1 [POST] ( CREATE ) POST
-    2.2 [PUT] ( UPDATE ) POST
-    3.3 [DELETE] ( DELETE ) POST
-    4.4 [GET] ( SHOW ) ALL POSTS
-    5.5 [GET] ( SHOW ) POST BY ID
-    6.6 [SEARCH] ( SEARCH ) POST
+    1. CREATE POST
+    2. UPDATE POST
+    3. DELETE POST
+    4. SHOW ALL POSTS
+    5. SHOW POST BY ID
+    6. SEARCH POST
 
   - MODULE EXPORTS
 
@@ -20,9 +20,14 @@ in this file is all the logic, everything that is modify, change or check, is do
 
 const storage = require('./post.service')
 
-//------------------------------------------------------------------------------------------------
-//1.1 ( CREATE ) POST
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 1. CREATE POST
+ * @desc      post creation
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 const createPost = async (title, text) => {
   try {
@@ -57,12 +62,16 @@ const createPost = async (title, text) => {
   }
 }
 
-//------------------------------------------------------------------------------------------------
-//2.2 ( UPDATE ) POST
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 2. UPDATE POST
+ * @desc      update post by id
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 const updateLocal = async (id, post) => {
-  console.log(id, post)
   try {
     if (!id || !post) {
       throw new Error('Missing data')
@@ -84,9 +93,14 @@ const updateLocal = async (id, post) => {
   }
 }
 
-//------------------------------------------------------------------------------------------------
-//3.3 ( DELETE ) POST
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 3. DELETE POST
+ * @desc      delete post by id
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 const deletePost = async id => {
   if (!id) {
@@ -106,9 +120,14 @@ const deletePost = async id => {
   }
 }
 
-//------------------------------------------------------------------------------------------------
-//4.4 ( SHOW ) ALL POSTS
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 4. SHOW ALL POSTS
+ * @desc      get all posts
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 const getAllPost = async () => {
   const result = await storage.getAllPostsDb()
@@ -119,9 +138,14 @@ const getAllPost = async () => {
   return finalResponse
 }
 
-//------------------------------------------------------------------------------------------------
-//5.5 ( SHOW ) POST BY ID
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 5. SHOW POST BY ID
+ * @desc      get post by id
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 const getPostById = async id => {
   const result = await storage.getOnePostByIdDb(id)
@@ -132,9 +156,14 @@ const getPostById = async id => {
   return finalResponse
 }
 
-//------------------------------------------------------------------------------------------------
-//6.6 ( SEARCH ) POST
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * @titleDesc 6. SEARCH POST
+ * @desc      post search
+ * @params    {object} req - request object
+ * @params    {object} res - response object
+ * ------------------------------------------
+ */
 
 const search = async searchValue => {
   const result = await storage.searchDb(searchValue)
@@ -145,9 +174,11 @@ const search = async searchValue => {
   return finalResponse
 }
 
-//------------------------------------------------------------------------------------------------
-//MODULE EXPORTS
-//------------------------------------------------------------------------------------------------
+/**
+ * ------------------------------------------
+ * MODULE EXPORTS
+ * ------------------------------------------
+ */
 
 module.exports = {
   createPost,
